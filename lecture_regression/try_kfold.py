@@ -2,6 +2,8 @@ import pandas
 from sklearn import linear_model
 from sklearn.model_selection import KFold
 from sklearn import metrics
+from matplotlib import pyplot
+import numpy
 dataset = pandas.read_csv("dataset_3_outputs.csv")
 
 target = dataset.iloc[:, 0].values  # zero column is one
@@ -24,3 +26,10 @@ for training_index, test_index in kfold_object.split(data):
     machine.fit(data_training, target_training)
     new_target = machine.predict(data_test)
     print(metrics.r2_score(target_test, new_target))
+    new_target_newaxis = new_target[:,numpy.newaxis]
+    results_machine = linear_model.LinearRegression()
+    results_machine.fit(new_target_newaxis,target_test)
+    pyplot.scatter(new_target_newaxis,target_test)
+    pyplot.plot(new_target_newaxis, results_machine.predict(new_target_newaxis), color = 'k')
+    pyplot.savefig('scatterplot.png' + str(i) + '.png')
+    pyplot.clf()
