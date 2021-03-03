@@ -1,7 +1,7 @@
 import pandas
 from sklearn import linear_model
 
-dataset = pandas.read_csv("dataset_3_outputs.csv")
+dataset = pandas.read_csv("hw1.csv")
 
 print(dataset)
 
