@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import matplotlib as plt
 from sklearn import linear_model
+from sklearn.metrics import r2_score
+from sklearn.model_selection import train_test_split
 from sklearn.model_selection import KFold
 from sklearn import metrics
 
@@ -42,6 +44,48 @@ dataset = dataset[dataset["price"]<300]
 
 dataset["minimum_nights"].plot.hist(bins=10)
 print(dataset["minimum_nights"].describe())
-dataset = dataset[dataset["price"]<14]
-region_dummies = pd.get_dummies(dataset['region'])
-occ_dummies = pd.get_dummies(dataset['occ'])
+dataset = dataset[dataset["minimum_nights"]<14]
+
+dataset_1 = pd.get_dummies(dataset, columns=["neighbourhood_group","room_type"], prefix = ["nbhdg","rt"],drop_first=True)
+dataset_1.drop(["neighbourhood"], axis =1, inplace= True)
+data = dataset_1.loc[:, dataset_1.columns != "price"]
+target = dataset_1["price"]
+# machine = linear_model.LinearRegression()
+# machine.fit(data,target)
+# print(machine.coef_)
+
+#use ridge
+for power in range (1,7):
+    print ("power:", )
+# machine = linear_model.Ridge(alpha = 0.001, normalize=True)
+# machine.fit(data,target)
+# print(machine.coef_)
+
+#use lasso
+machine = linear_model.Lasso(alpha = 0.001, normalize=True)
+machine.fit(data,target)
+
+print(machine.coef_)
+
+
+# dataset_1 = pd.get_dummies(dataset, columns=["neighbourhood_group","room_type", "neighbourhood"], prefix = ["nbhdg","rt","nbhd"],drop_first=True)
+
+
+# machine = linear_model.LinearRegression()
+# machine.fit(data,target)
+# print(machine.coef_)
+
+# i = 0
+# for training_index, test_index in kfold_object.split(data):
+# 	print(i)
+# 	i = i + 1
+# 	print("training:", training_index)
+# 	print("test:", test_index)
+# 	data_training = data[training_index]
+# 	data_test = data[test_index]
+# 	target_training = target[training_index]
+# 	target_test = target[test_index]
+# 	machine = linear_model.LinearRegression()
+# 	machine.fit(data_training,target_training)
+# 	new_target = machine.predict(data_test)
+# 	print("R2 score:", metrics.r2_score(target_test,new_target))
