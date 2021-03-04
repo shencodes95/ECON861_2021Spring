@@ -1,11 +1,7 @@
 import pandas as pd
-import numpy as np
-import matplotlib as plt
 from sklearn import linear_model
-from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
-from sklearn.model_selection import KFold
-from sklearn import metrics
+
 
 pd.set_option('display.max_columns', 500)
 dataset = pd.read_csv("hw1.csv")
@@ -26,7 +22,7 @@ dataset = pd.read_csv("hw1.csv")
 dataset.fillna({"reviews_per_month":0}, inplace=True)
 
 #subsetting the dataset with 10 variables and ID
-dataset = dataset[["id", "price", "room_type", "neighbourhood_group", "neighbourhood", "minimum_nights", "number_of_reviews", "reviews_per_month", "calculated_host_listings_count"]]
+dataset = dataset[[ "price", "room_type", "neighbourhood_group", "neighbourhood", "minimum_nights", "number_of_reviews", "reviews_per_month", "calculated_host_listings_count"]]
 
 print(dataset.isnull().sum())
 
@@ -46,46 +42,59 @@ dataset["minimum_nights"].plot.hist(bins=10)
 print(dataset["minimum_nights"].describe())
 dataset = dataset[dataset["minimum_nights"]<14]
 
+#experiment 1
+#create k-1 dummy to prevent autocorrelation
 dataset_1 = pd.get_dummies(dataset, columns=["neighbourhood_group","room_type"], prefix = ["nbhdg","rt"],drop_first=True)
 dataset_1.drop(["neighbourhood"], axis =1, inplace= True)
 data = dataset_1.loc[:, dataset_1.columns != "price"]
 target = dataset_1["price"]
-# machine = linear_model.LinearRegression()
-# machine.fit(data,target)
+
+# regular regression
+# x_train1, x_test1, y_train1, y_test1 = train_test_split(data, target, test_size=0.20, random_state=42)
+# machine = linear_model.LinearRegression().fit(x_train1, y_train1)
+# print(machine.score(x_train1, y_train1))
 # print(machine.coef_)
+# print(1-(1-machine.score(x_train1,y_train1))*(len(y_train1)-1)/(len(y_train1) - x_train1.shape[1]-1))
 
 #use ridge
-for power in range (1,7):
-    print ("power:", )
-# machine = linear_model.Ridge(alpha = 0.001, normalize=True)
-# machine.fit(data,target)
+# x_train1, x_test1, y_train1, y_test1 = train_test_split(data, target, test_size=0.20, random_state=42)
+# machine = linear_model.Ridge(alpha = 0.01, normalize = True).fit(x_train1, y_train1)
+# print(machine.score(x_train1, y_train1))
 # print(machine.coef_)
-
+# print(list(data.columns))
+# print(1-(1-machine.score(x_train1,y_train1))*(len(y_train1)-1)/(len(y_train1) - x_train1.shape[1]-1))
 #use lasso
-machine = linear_model.Lasso(alpha = 0.001, normalize=True)
-machine.fit(data,target)
-
+x_train1, x_test1, y_train1, y_test1 = train_test_split(data, target, test_size=0.20, random_state=42)
+machine = linear_model.Lasso(alpha = 0.01, normalize = True).fit(x_train1, y_train1)
+print(machine.score(x_train1, y_train1))
 print(machine.coef_)
+print(list(data.columns))
+print(1-(1-machine.score(x_train1,y_train1))*(len(y_train1)-1)/(len(y_train1) - x_train1.shape[1]-1))
 
+#Experiment 2
 
-# dataset_1 = pd.get_dummies(dataset, columns=["neighbourhood_group","room_type", "neighbourhood"], prefix = ["nbhdg","rt","nbhd"],drop_first=True)
-
-
-# machine = linear_model.LinearRegression()
-# machine.fit(data,target)
+# dataset_1 = pd.get_dummies(dataset, columns=["room_type", "neighbourhood"], prefix = ["rt","nbhd"],drop_first=True)
+# dataset_1.drop(["neighbourhood_group"], axis =1, inplace= True)
+# data = dataset_1.loc[:, dataset_1.columns != "price"]
+# target = dataset_1["price"]
+# print(list(data.columns))
+#
+# # regular regression
+# x_train1, x_test1, y_train1, y_test1 = train_test_split(data, target, test_size=0.20, random_state=42)
+# machine = linear_model.LinearRegression().fit(x_train1, y_train1)
+# print(machine.score(x_train1, y_train1))
 # print(machine.coef_)
-
-# i = 0
-# for training_index, test_index in kfold_object.split(data):
-# 	print(i)
-# 	i = i + 1
-# 	print("training:", training_index)
-# 	print("test:", test_index)
-# 	data_training = data[training_index]
-# 	data_test = data[test_index]
-# 	target_training = target[training_index]
-# 	target_test = target[test_index]
-# 	machine = linear_model.LinearRegression()
-# 	machine.fit(data_training,target_training)
-# 	new_target = machine.predict(data_test)
-# 	print("R2 score:", metrics.r2_score(target_test,new_target))
+# print(1-(1-machine.score(x_train1,y_train1))*(len(y_train1)-1)/(len(y_train1) - x_train1.shape[1]-1))
+#use ridge
+# x_train1, x_test1, y_train1, y_test1 = train_test_split(data, target, test_size=0.20, random_state=42)
+# machine = linear_model.Ridge(alpha = 0.01, normalize = True).fit(x_train1, y_train1)
+# print(machine.score(x_train1, y_train1))
+# print(machine.coef_)
+# print(list(data.columns))
+# print(1-(1-machine.score(x_train1,y_train1))*(len(y_train1)-1)/(len(y_train1) - x_train1.shape[1]-1))
+#use lasso
+# x_train1, x_test1, y_train1, y_test1 = train_test_split(data, target, test_size=0.20, random_state=42)
+# machine = linear_model.Lasso(alpha = 0.01, normalize = True).fit(x_train1, y_train1)
+# print(machine.score(x_train1, y_train1))
+# print(machine.coef_)
+# print(1-(1-machine.score(x_train1,y_train1))*(len(y_train1)-1)/(len(y_train1) - x_train1.shape[1]-1))
